@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="OutputdatabaseMetadata" format="json">
+      <types:shape format="weave" example="examples/example-2.json"><![CDATA[%dw 2.0
+
+type OutputdatabaseMetadata = Array<{|  name: String,   adress: String,   phone: Number {"typeId": "double"}|}> {"example": "[{\\\"name\\\":\\\"pardhu\\\",\\\"adress\\\":\\\"vijayawada\\\",\\\"phone\\\":9292929292},{\\\"name\\\":\\\"pardhu\\\",\\\"adress\\\":\\\"vijayawada\\\",\\\"phone\\\":9292929292}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="inputcsvMetadata" format="csv">
+      <types:shape format="weave"><![CDATA[%dw 2.0
+
+type inputcsvMetadata = Array<{|  name: String,   adress: String,   phone: Number|}> {"isQuotedString": "false",
+"header": "true",
+"headerLineNumber": "0"}
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#9a9b21ca-a29a-45b7-956e-2263a4449082">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="inputcsvMetadata"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="OutputdatabaseMetadata"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

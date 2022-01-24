@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="02be29e6-0c38-483f-b809-70b6b8a10268" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="0ccd24b4-3051-4ecc-bc07-0b83d500ace2" />
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="5bf6e95e-70af-4b5c-abef-43a5fa9e39c4" >
+		<db:my-sql-connection host="localhost" port="3306" user="pardhu" password="5915" database="mysql" />
+	</db:config>
+	<db:config name="Database_Config1" doc:name="Database Config" doc:id="dc3bc7ec-281e-422f-bfc8-ac7adfc2f017" >
+		<db:my-sql-connection host="localhost" port="3306" user="pardhu" password="5915" database="mysql" />
+	</db:config>
+	<flow name="bulk-insert-from-csvFlow" doc:id="01bc064f-532a-4fd6-b55b-c0f03f2dfdee" >
+		<http:listener doc:name="Listener" doc:id="541182ae-6b88-48de-a818-e37f9e7ae8dc" config-ref="HTTP_Listener_config" path="/bulkinsert"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1efcd194-f7f6-4af6-8020-ed846cad0570" message="Request recieved to read the data from csv file"/>
+		<file:read doc:name="Read" doc:id="a41106da-7689-4624-be12-ee2dbe759744" config-ref="File_Config" path="C:\Users\pardh\Desktop\New folder\employee.csv"/>
+		<ee:transform doc:name="Transform Message" doc:id="9a9b21ca-a29a-45b7-956e-2263a4449082" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	name: payload01.name,
+	adress: payload01.adress,
+	phone: payload01.phone
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="1cdd33bb-1727-4e1b-b11c-5f8f7a949083" message="#[payload]"/>
+		<db:bulk-insert doc:name="Bulk insert" doc:id="c54c4a12-b7f7-48a9-8263-c9ffd6b67855" config-ref="Database_Config1">
+			<db:sql ><![CDATA[insert into employees_db (name, adress, phone)
+values (:name, :adress, :phone)]]></db:sql>
+		</db:bulk-insert>
+		<ee:transform doc:name="Transform Message" doc:id="5cfe2537-0058-44ab-8a95-0d9129357e38" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "data from csv file inserted into database success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

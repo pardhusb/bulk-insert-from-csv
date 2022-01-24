@@ -1,0 +1,17 @@
+customerId,name,adress,phone
+111,saroja,sanf,8888434400
+112,foraj,london,9292929292
+113,harji,aus.9191919191
+114,kilji,afgan,7272727272
+115,saroja,sanf,8888434400
+116,foraj,london,9292929292
+117,harji,aus.9191919191
+118,kilji,afgan,7272727272
+119,saroja,sanf,8888434400
+120,foraj,london,9292929292
+121,harji,aus.9191919191
+122,kilji,afgan,7272727272
+123,saroja,sanf,8888434400
+124,foraj,london,9292929292
+125,harji,aus.9191919191
+126,kilji,afgan,7272727272
